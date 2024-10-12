@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Форма билета</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 82vh;
+            margin: 0;
+        }
+        #ticket-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        input, button {
+            padding: 10px;
+            font-size: 16px;
+        }
+        input[type="time"] {
+            width: 140px; /* Увеличиваем ширину для отображения секунд */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Введите данные для билета</h1>  
+
+    <form id="ticket-form">
+        <input type="text" id="bus-number" placeholder="Номер автобуса" required>
+        <input type="text" id="route-number" placeholder="Маршрут" required>
+        <input type="date" id="payment-date" required>
+        <input type="time" id="payment-time" step="1" required>
+        <button type="submit">Показать билет</button>
+    </form>
+
+    <script>
+        document.getElementById('ticket-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Получаем значения полей формы
+            const busNumber = document.getElementById('bus-number').value;
+            const routeNumber = document.getElementById('route-number').value;
+            const paymentDate = document.getElementById('payment-date').value;
+            const paymentTime = document.getElementById('payment-time').value;
+
+            // Преобразование даты с формата 'YYYY-MM-DD' в 'DD.MM.YYYY'
+            const formattedDate = paymentDate .split('-').reverse().join('.');
+
+            // Создаем новый HTML-контент для билета
+            const ticketHTML = `
+          <!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой билет</title>
+    <style>
+        body {  font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 82vh;
+            margin: 0;
+        }
+        .ticket-container {
+            border-radius: 10px;
+            box-shadow: 43, 148, 47px rgba(0, 0, 0, 0.1);
+            width: 321px;
+            padding: 20px;
+            text-align: center;
+            background-color: white;
+            position: relative; /* Для позиционирования "ПРОЕЗД ОПЛАЧЕН" */
+            overflow: hidden; /* Чтобы скрыть излишки текста */
+            margin-left: 42px; /* Смещаем контейнер правее */
+        }
+        /* Добавляем темную полосу */
+        .dark-strip {
+            background-color: hsl(359, 73%, 22%); /* Более темный оттенок */
+            height: 25px;
+            width: 100%;
+            position: fixed;
+            top: 0px;
+            left: 0;
+            z-index: 999; /* Чтобы темная полоса была над контентом */
+        }
+        .header {
+            background-color: hsl(0, 92%, 34%); /* Красная полоса */
+            color: white;
+            padding: 10px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            box-sizing: border-box;
+            position: fixed; /* Фиксируем заголовок */
+            top: 15px;
+            left: 0px;
+            z-index: 1000; /* Чтобы заголовок был поверх всего остального контента */
+            height: 48px; /* Фиксированная высота заголовка */
+        }
+        .content {
+            text-align: center;
+            margin-top: 20px;
+            padding: 20px;
+        }
+        @media (max-width: 400px) {
+            .header {
+                padding: 8px;
+                height: 40px;
+                top: 100px; /* Отступ от верхнего края экрана */
+        }
+        body {
+                padding-top: 50px;
+            }
+            .header .title {
+                font-size: 16px;
+            }
+        }   
+        .header .title {
+            font-size: 16px;
+        }
+        .back-icon {
+            width: 26px;
+            height: 22px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        .title {
+            font-size: 21px;
+        }
+        .line {
+            border-top: 1px solid #ccc;
+            margin: 10px 0;
+        }
+        .details {
+            text-align: left;
+            margin-bottom: 48px;
+        }
+        .details p {
+            margin: 5px 0;
+        }
+        .big-text {
+            font-size: 36px;
+            font-weight: bold;
+        }
+        .flex-container {
+            display: flex;
+            justify-content: space-between; /* Разместить элементы по краям */
+            margin-bottom: 10px; /* Отступ снизу */
+            margin-top: 7px; /* Добавленный отступ сверху */
+        }
+        .label {
+            font-size: 17px;
+            margin: 0;
+            color: grey; /* Изменили цвет на серый */
+        }
+        .value {
+            font-size: 17px;
+            font-weight: bold;
+            margin: 0;
+        }
+        .price {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .code-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            width: 100%; /* Устанавливаем ширину по ширине контейнера */
+            max-width: 250000px; /* Максимальная ширина контейнера для кода */
+            margin-top: 18px;
+            white-space: nowrap; /* Запрет на перенос текста */
+            overflow: hidden; /* Скрываем текст, если он выходит за границы */
+            text-align: center; /* Центрируем текст внутри контейнера */
+            font-size: 15px; /* Уменьшенный размер шрифта */
+        }
+        .paid {
+            background-color: #37a53b;
+            color: white;
+            padding: 18px 0; /* Увеличенное расстояние */
+            border-radius: 0 0 10px 10px; /* Скругленные края внизу */
+            font-size: 19px;
+            font-weight: bold;
+            width: 100%; /* Покрывает всю ширину */
+            position: absolute; /* Позиционирование внизу */
+            bottom: 0; /* Привязка к нижнему краю */
+            left: 0;
+            text-align: center;
+            animation: blink 1s infinite; /* Применение мигания */
+        }
+        @keyframes blink {
+            0%, 100% {opacity: 1;}
+            30% {opacity: 0;}
+        }
+    </style>
+</head>
+ <body>
+
+ <!-- Темная полоса -->
+   <div class="dark-strip"></div>
+
+   <div class="ticket-container">
+        <div class="details">
+        <div class="header">
+            <div class="back-icon">&#8592;</div> <!-- Знак обратно -->
+            <div class="title">Мой билет</div>
+        </div>
+        <p class="price">АВТОБУС</p>
+        <p style="margin-top: 9px;">TOO "Smart City Service"</p> <!-- Добавленный отступ сверху -->
+
+        <div class="line"></div>
+        <p style="margin-top: 13px; margin-bottom: 10px; color: grey;">Номер автобуса</p>
+        <p class="big-text">${busNumber}</p>
+        <div class="line"></div>
+        <p style="margin-top: 15px; margin-bottom: 9px; color: grey;">Время</p>
+        <p class="big-text">${paymentTime}</p>
+        <div class="line"></div>
+        <div class="flex-container">
+             <div class="date-payment">
+                  <p class="label">Дата оплаты</p>
+                  <p class="value">${formattedDate}</p>
+             </div>
+             <div class="price-container">
+                  <p class="label">Стоимость</p>
+                  <p class="value">85 ₸</p>
+              </div>
+        </div>
+        <p style="color: grey;">Маршрут</p>
+        <p class="price">${routeNumber}</p> 
+        <div class="code-section"> <!-- Новый контейнер для код -->
+            <p>e879fec6-ca80-4a83-8b27-768f83295d2a</p>
+        </div>
+        </div>
+       <div class="paid">ПРОЕЗД ОПЛАЧЕН</div>
+    </div>
+    <div class="content"></div>         
+    `;
+
+            // Открываем новое окно с билетом
+            const ticketWindow = window.open('', '_blank');
+            ticketWindow.document.write(ticketHTML);
+            ticketWindow.document.close();
+        });
+    </script>
+
+</body>
+</html>
